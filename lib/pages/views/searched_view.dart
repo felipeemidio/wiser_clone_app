@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wiser_clone_app/core/app_colors.dart';
 import 'package:wiser_clone_app/models/book.dart';
+import 'package:wiser_clone_app/widgets/app_button.dart';
 import 'package:wiser_clone_app/widgets/book_detail_bottom_sheet.dart';
 import 'package:wiser_clone_app/widgets/book_tile.dart';
 
@@ -37,21 +38,7 @@ class SearchedView extends StatelessWidget {
                 style: TextStyle(fontSize: 16),
               ),
               SizedBox(height: 20),
-              FilledButton(
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-
-                onPressed: onGoToExplore,
-                child: const Text(
-                  'Explore All Books',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+              AppButton(label: 'Explore All Books', onPressed: onGoToExplore),
             ],
           ),
         ),

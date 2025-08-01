@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:wiser_clone_app/models/category.dart';
 
 class Book {
@@ -24,6 +26,22 @@ class Book {
       isTrend: json['isTrend'] ?? false,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'author': author,
+      'category': category.name,
+      'capeUrl': capeUrl,
+      'isTrend': isTrend,
+    };
+  }
+
+  factory Book.fromJson(String json) {
+    return Book.fromMap(jsonDecode(json));
+  }
+
+  String toJson() => jsonEncode(toMap());
 
   String stringfy() {
     return '${name.toLowerCase()} ${author.toLowerCase()}';

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:wiser_clone_app/core/app_colors.dart';
 import 'package:wiser_clone_app/models/book.dart';
+import 'package:wiser_clone_app/repositories/recent_books_repository.dart';
 import 'package:wiser_clone_app/services/api_service.dart';
 import 'package:wiser_clone_app/widgets/book_detail_bottom_sheet.dart';
+import 'package:wiser_clone_app/widgets/book_with_title_card.dart';
 import 'package:wiser_clone_app/widgets/free_book_card.dart';
 import 'package:wiser_clone_app/widgets/title_label.dart';
 import 'package:wiser_clone_app/widgets/top_book_card.dart';
@@ -15,30 +18,35 @@ class ExplorePage extends StatefulWidget {
 }
 
 class _ExplorePageState extends State<ExplorePage> {
+  final _recentBooksRepository = RecentBooksRepository();
   final _apiService = ApiService();
-  late final int weekday = DateTime.now().weekday;
+  late final today = DateTime.now();
   final allWeekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   final freeBooks = [];
-  List<Book> books = [
-    // Book(
-    //   name: 'The Lord of the Rings',
-    //   author: 'James Clear',
-    //   category: BookCategoryFactory.drama,
-    //   capeUrl: 'https://m.media-amazon.com/images/I/81ANaVZk5LL.jpg',
-    // ),
-    // Book(
-    //   name: 'The Lord of the Rings',
-    //   author: 'James Clear',
-    //   category: BookCategoryFactory.drama,
-    //   capeUrl: 'https://m.media-amazon.com/images/I/81ANaVZk5LL.jpg',
-    // ),
-    // Book(
-    //   name: 'The Lord of the Rings',
-    //   author: 'James Clear',
-    //   category: BookCategoryFactory.drama,
-    //   capeUrl: 'https://m.media-amazon.com/images/I/81ANaVZk5LL.jpg',
-    // ),
-  ];
+  List<Book> books = [];
+  List<Book> recentBooks = [];
+
+  String getTimePeriod() {
+    final currentTime = DateTime.now();
+    final hour = currentTime.hour;
+
+    if (hour >= 5 && hour < 12) {
+      return 'Morning';
+    } else if (hour >= 12 && hour < 18) {
+      return 'Afternoon';
+    } else {
+      return 'Evening';
+    }
+  }
+
+  _updateRecents() async {
+    final recentBooks = await _recentBooksRepository.getAll();
+    if (context.mounted) {
+      setState(() {
+        this.recentBooks = recentBooks;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -51,6 +59,7 @@ class _ExplorePageState extends State<ExplorePage> {
         });
       }
     });
+    _updateRecents();
   }
 
   @override
@@ -60,12 +69,23 @@ class _ExplorePageState extends State<ExplorePage> {
         surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
-        title: Text(
-          'Explore',
-          style: TextStyle(
-            fontSize: 36,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Explore',
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              '${DateFormat.yMMMMEEEEd().format(today)}. Good ${getTimePeriod()}, Ben!',
+              maxLines: 1,
+              overflow: TextOverflow.visible,
+              style: TextStyle(fontSize: 12, color: AppColors.gray),
+            ),
+          ],
         ),
         actions: [
           Container(
@@ -110,8 +130,8 @@ class _ExplorePageState extends State<ExplorePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.generate(allWeekdays.length, (index) {
-                  final past = weekday > index + 1;
-                  final color = weekday == index + 1 ? AppColors.blue : AppColors.gray;
+                  final past = today.weekday > index + 1;
+                  final color = today.weekday == index + 1 ? AppColors.blue : AppColors.gray;
                   return Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -139,7 +159,7 @@ class _ExplorePageState extends State<ExplorePage> {
                       padding: isFirst ? EdgeInsets.zero : const EdgeInsets.only(left: 16),
                       child: GestureDetector(
                         onTap: () {
-                          showBookDetailBottomSheet(context, freeBooks[index]);
+                          showBookDetailBottomSheet(context, freeBooks[index]).then((_) => _updateRecents());
                         },
                         child: FreeBookCard(
                           book: freeBooks[index],
@@ -162,7 +182,7 @@ class _ExplorePageState extends State<ExplorePage> {
                       padding: isFirst ? EdgeInsets.zero : const EdgeInsets.only(left: 16),
                       child: GestureDetector(
                         onTap: () {
-                          showBookDetailBottomSheet(context, book);
+                          showBookDetailBottomSheet(context, book).then((_) => _updateRecents());
                         },
                         child: TopBookCard(
                           index: index + 1,
@@ -178,7 +198,7 @@ class _ExplorePageState extends State<ExplorePage> {
                 height: 200,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: books.length,
+                  itemCount: 3,
                   itemBuilder: (context, index) {
                     final isFirst = index == 0;
 
@@ -207,6 +227,28 @@ class _ExplorePageState extends State<ExplorePage> {
                     );
                   },
                 ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const TitleLabel(title: 'Recent books'),
+                  SizedBox(
+                    height: 230,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: recentBooks.length,
+                      itemBuilder: (context, index) {
+                        final isFirst = index == 0;
+
+                        return Padding(
+                          padding: isFirst ? EdgeInsets.zero : const EdgeInsets.only(left: 16),
+                          child: BookWithTitleCard(book: recentBooks[index]),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

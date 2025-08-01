@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wiser_clone_app/models/book.dart';
-import 'package:wiser_clone_app/services/ai_service.dart';
+import 'package:wiser_clone_app/widgets/app_button.dart';
 
 Future<void> showBookDetailBottomSheet(BuildContext context, Book book) {
   return showModalBottomSheet(
@@ -23,23 +23,6 @@ class BookDetailBottomSheet extends StatefulWidget {
 }
 
 class _BookDetailBottomSheetState extends State<BookDetailBottomSheet> {
-  String dynamicDescription = "";
-  bool isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    isLoading = true;
-    AiService.getBookDescription(widget.book).then((value) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-          dynamicDescription = value;
-        });
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -108,24 +91,11 @@ class _BookDetailBottomSheetState extends State<BookDetailBottomSheet> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-              isLoading
-                  ? Center(
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.black,
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                        ),
-                      ),
-                    )
-                  : Text(
-                      dynamicDescription.trim(),
-                      style: TextStyle(
-                        color: Color(0xFF969697),
-                      ),
-                    ),
-              const SizedBox(height: 16),
+              AppButton(
+                label: 'Read Book',
+                onPressed: () => Navigator.of(context).pushNamed('/summary', arguments: widget.book),
+              ),
+              const SizedBox(height: 24),
             ],
           ),
         ),

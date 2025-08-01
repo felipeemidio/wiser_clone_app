@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:wiser_clone_app/models/book.dart';
 import 'package:wiser_clone_app/pages/home_page.dart';
+import 'package:wiser_clone_app/pages/summary_page.dart';
 
 class MainWidget extends StatelessWidget {
   const MainWidget({super.key});
@@ -13,7 +15,11 @@ class MainWidget extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF3587FB)),
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: HomePage(),
+      initialRoute: '/home',
+      routes: {
+        '/home': (context) => HomePage(),
+        '/summary': (context) => SummaryPage(book: ModalRoute.of(context)!.settings.arguments as Book),
+      },
     );
   }
 }
