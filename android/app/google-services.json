@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "579943640678",
+    "project_id": "wiser-clone",
+    "storage_bucket": "wiser-clone.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:579943640678:android:39bd3f8cd2be3a171947a7",
+        "android_client_info": {
+          "package_name": "com.example.wiser_clone_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAfKkcUe-fe_VEPWRQm8jM7xXiyNv8JNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
