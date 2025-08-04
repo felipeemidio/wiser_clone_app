@@ -86,11 +86,6 @@ class _BookDetailBottomSheetState extends State<BookDetailBottomSheet> {
                 style: TextStyle(color: Color(0xFF969697), fontSize: 16),
               ),
               const SizedBox(height: 32),
-              Text(
-                'Description',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 8),
               AppButton(
                 label: 'Read Book',
                 onPressed: () => Navigator.of(context).pushNamed('/summary', arguments: widget.book),

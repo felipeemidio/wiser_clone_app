@@ -1,6 +1,7 @@
 import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wiser_clone_app/models/book.dart';
+import 'package:wiser_clone_app/services/api_service.dart';
 
 class AiService {
   static OpenAI? _openAi;
@@ -21,7 +22,14 @@ class AiService {
       );
 
       final response = await _openAi!.onCompletion(request: request);
-      return response == null ? "Summary not found." : response.choices.first.text.trim();
+      if (response == null) {
+        return "Summary not found.";
+      }
+
+      final description = response.choices.first.text.trim();
+
+      await ApiService().editBook(book.copyWith(description: description));
+      return description;
     } catch (e) {
       return "Summary not found.";
     }

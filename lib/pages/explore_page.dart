@@ -48,9 +48,7 @@ class _ExplorePageState extends State<ExplorePage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
+  _updateBooks() async {
     _apiService.getBooks().then((books) {
       if (mounted) {
         setState(() {
@@ -59,6 +57,12 @@ class _ExplorePageState extends State<ExplorePage> {
         });
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _updateBooks();
     _updateRecents();
   }
 
@@ -159,7 +163,10 @@ class _ExplorePageState extends State<ExplorePage> {
                       padding: isFirst ? EdgeInsets.zero : const EdgeInsets.only(left: 16),
                       child: GestureDetector(
                         onTap: () {
-                          showBookDetailBottomSheet(context, freeBooks[index]).then((_) => _updateRecents());
+                          showBookDetailBottomSheet(context, freeBooks[index]).then((_) {
+                            _updateBooks();
+                            _updateRecents();
+                          });
                         },
                         child: FreeBookCard(
                           book: freeBooks[index],
@@ -182,7 +189,10 @@ class _ExplorePageState extends State<ExplorePage> {
                       padding: isFirst ? EdgeInsets.zero : const EdgeInsets.only(left: 16),
                       child: GestureDetector(
                         onTap: () {
-                          showBookDetailBottomSheet(context, book).then((_) => _updateRecents());
+                          showBookDetailBottomSheet(context, book).then((_) {
+                            _updateBooks();
+                            _updateRecents();
+                          });
                         },
                         child: TopBookCard(
                           index: index + 1,

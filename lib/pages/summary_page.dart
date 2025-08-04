@@ -21,16 +21,20 @@ class _SummaryPageState extends State<SummaryPage> {
   @override
   void initState() {
     super.initState();
-    isLoading = true;
     recentBooksRepository.addRecentBook(widget.book);
-    AiService.getBookDescription(widget.book).then((value) {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-          dynamicDescription = value;
-        });
-      }
-    });
+    if (widget.book.description != null && widget.book.description!.isNotEmpty) {
+      dynamicDescription = widget.book.description!;
+    } else {
+      isLoading = true;
+      AiService.getBookDescription(widget.book).then((value) {
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            dynamicDescription = value;
+          });
+        }
+      });
+    }
   }
 
   @override
